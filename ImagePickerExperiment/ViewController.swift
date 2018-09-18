@@ -20,8 +20,8 @@ struct Meme {
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate  {
 
     @IBOutlet weak var imagePickerView: UIImageView!
-    @IBOutlet weak var AlbumPhoto: UIBarButtonItem!
-    @IBOutlet weak var Cam: UIBarButtonItem!
+    @IBOutlet weak var albumPhoto: UIBarButtonItem!
+    @IBOutlet weak var cam: UIBarButtonItem!
     @IBOutlet weak var textTop: UITextField!
     @IBOutlet weak var textBottom: UITextField!
     @IBOutlet weak var toolbar: UIToolbar!
@@ -37,7 +37,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        Cam.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
+        cam.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
          subscribeToKeyboardNotifications()
         shareButton.isEnabled = imagePickerView.image != nil
     }
@@ -82,18 +82,18 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
     }
     
-    @IBAction func pickerAnImage(_ sender: Any) {
-         let pickerController = UIImagePickerController()
-         pickerController.delegate = self
-        pickerController.sourceType = .photoLibrary
-        
-        present(pickerController, animated: true, completion: nil)
+    @IBAction func buttonPhoto(_ sender: Any) {
+        presentImagePickerWith(.photoLibrary)
     }
     
-    @IBAction func pickAnImageFromCamera(_ sender: Any){
+    @IBAction func buttonCam(_ sender: Any) {
+         presentImagePickerWith(.camera)
+    }
+    
+    func presentImagePickerWith(_ sourceType: UIImagePickerControllerSourceType) {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
-        imagePicker.sourceType = .camera
+        imagePicker.sourceType = sourceType
         
         present(imagePicker, animated: true, completion: nil)
     }
@@ -139,17 +139,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     func generateMemedImage() -> UIImage {
-//        showNavToolBar(true)
-        self.navigationController?.navigationBar.isHidden = true
-        self.toolbar.isHidden = true
-        
+        showNavToolBar(true)
+
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
         let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
-        
-        self.navigationBar.isHidden = false
-        self.toolbar.isHidden = false
+
+        showNavToolBar(false)
         
         return memedImage
     }
@@ -172,10 +169,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         shareButton.isEnabled = false
         imagePickerView.image = nil
     }
-    //    func showNavToolBar(_ x: Bool){
-//        self.navigationController?.navigationBar.isHidden = x
-//        self.toolbar.isHidden = x
-//    }
+    
+    func showNavToolBar(_ x: Bool){
+        self.navigationController?.navigationBar.isHidden = x
+        self.toolbar.isHidden = x
+    }
     
 }
 
